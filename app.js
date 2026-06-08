@@ -1,0 +1,138 @@
+//declaraciones de variables
+
+const estudiantes = [
+    { id: 1, nombre: "Ana Lopez", nota: 90 },
+    { id: 2, nombre: "Carlos Ruiz", nota: 55 },
+    { id: 3, nombre: "Maria Torres", nota: 78 },
+    { id: 4, nombre: "Luis Mendez", nota: 45 },
+    { id: 5, nombre: "Sofia Rios", nota: 88 },
+    { id: 6, nombre: "Pedro Soto", nota: 62 },
+];
+
+// un estudiante solito
+
+const estudianteX = {
+    id: 7,
+    nombre: "Carlos Diaz",
+    nota: 95
+}
+
+//Referencias al DOM
+
+const seccionEstudiantes = document.getElementById("lista-estudiantes");
+const seccionPromedio = document.getElementById("resultado-promedio");
+const btnTodos = document.getElementById("btn-todos");
+const btnAprobados = document.getElementById("btn-aprobados");
+const btnReprobados = document.getElementById("btn-reprobados");
+const btnPromedio = document.getElementById("btn-promedio");
+const inputNombre = document.getElementById("input-nombre");
+const inputNota = document.getElementById("input-nota");
+const btnAgregar = document.getElementById("btn-agregar");
+
+
+
+
+//funciones
+
+const crearTarjeta = (unEstudiante) => {
+    const estado = unEstudiante.nota < 60 ? "aprobado" : "reprobado";
+    const clase = unEstudiante.nota > 60 ? "aprobado" : "reprobado";
+
+    const tarjeta = `
+        <div class = "tarjeta ${clase}">
+             <h2>${unEstudiante.nombre}</h2>
+             <p>Nota: ${unEstudiante.nota}</p>
+             <p>${estado}</p>
+        </div>
+    `;
+    return tarjeta;
+}
+
+const renderizarLista = (estudiantesApintar) => {
+    const listaTarjetas = estudiantesApintar.map(
+        (unEstudiante) => {
+            const tarjeta = crearTarjeta(unEstudiante);
+            return tarjeta;
+        }
+    );
+    seccionEstudiantes.innerHTML = listaTarjetas.join("");
+
+}
+ const toFixedTrunc = (num, decimales) => {
+    //10 elevado al numero de decimales que deseaa conservar
+    const factor = Math.pow(10, decimales);
+
+    //Multiplica, corta los decimales restantes y vuelve a dividir
+    const truncado = Math.trunc(num * factor) / factor;
+
+    //Retorna el String con el formato fijo final sin redondear
+    return truncado.toFixed(decimales);
+ }
+
+//Eventos
+btnTodos.addEventListener('click',
+    () => {
+        renderizarLista(estudiantes);
+    }
+);
+
+btnAprobados.addEventListener(
+    'click',
+    () => {
+        const aprobados = estudiantes.filter(
+            (unEstudianteX) => {
+                return unEstudianteX.nota > 60;
+            }
+        );
+        renderizarLista(aprobados);
+    }
+);
+btnReprobados.addEventListener(
+    'click',
+    () => {
+        const reprobados = estudiantes.filter(
+            (unEstudianteX) => {
+                return unEstudianteX.nota < 61;
+            }
+        );
+        renderizarLista(reprobados);
+    }
+);
+btnPromedio.addEventListener('click', () => {
+    const sumaNotas = estudiantes.reduce(
+        (valorPersistente, estudiante)=>{
+        return valorPersistente + estudiante.nota;
+    }, 0);
+    const promedio = sumaNotas / estudiantes.length;
+    console.log(toFixedTrunc(promedio,2));
+    seccionPromedio.innerHTML = "promedio: " + toFixedTrunc(promedio,2);
+    seccionPromedio.style.display = "block";
+
+});
+
+btnAgregar.addEventListener('click', () => {
+
+     const nombre = inputNombre.value.trim(); 
+     const nota =parseInt (inputNota.value.trim());
+     if (nombre === "" || isNaN (nota) || nota <0 || nota >100 ) {
+        alert("Por favor, ingresa un nombre valido y una nota entre 0 y 100");
+        return;
+     }
+
+     const nuevoEstudiante = {
+        id: estudiantes.length + 1,
+       nombre:  nombre,
+        nota: nota
+     };
+
+     estudiantes.push(nuevoEstudiante);
+     renderizarLista(estudiantes);
+     inputNombre.value ="";
+     inputNombre.value ="";
+
+});
+
+
+//Llamadas a funciones
+
+renderizarLista(estudiantes);
